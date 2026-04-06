@@ -1,0 +1,22 @@
+# Ignore massive dataset files and machine learning models
+*.csv
+*.pkl
+!movies.pkl
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environments
+env/
+venv/
+.venv/
+env*/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
