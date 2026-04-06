@@ -29,7 +29,7 @@ def fetch_poster(movie_id):
     return full_path
 
 
-# making a function
+# making a function which returns recommended movie names and their posters
 def recommend(movie):
     movie_index = movies[movies['TITLE'] == movie].index[0]
     distances = sorted(list(enumerate(similarity[movie_index])), reverse=True, key=lambda x: x[1])
@@ -45,8 +45,7 @@ def recommend(movie):
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Displays a clickable LinkedIn link in the top right of the page
-
+# html code for credits (GitHub, & LinkedIn)
 st.markdown(
     """
     <div style='display: flex; justify-content: flex-end; align-items: center;'>
@@ -62,17 +61,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Displays the big heading title on the page
+# The big heading title for the page
 st.title('Movie Recommendation System')
-# putting option for to take input, it forces the user to select for one option only
 
+# putting option for to take input, it forces the user to select for one option only
 notification_option = st.selectbox(
     "How would you like to be sent notification for upcoming updates?", 
     ("Message", "E-Mail", "Whatsapp Message", "Streamlit Messages")
 )
 
 movie_option = st.selectbox("Select a movie", movies_list)
-st.write("MOVIE SELECTED :", movie_option)           # used to write lines
+st.write("MOVIE SELECTED :", movie_option)           # "st.write" is used to write lines
 
 
 # making a button
@@ -96,6 +95,12 @@ if st.button('RECOMMEND'):
             st.text(recommended_movie_names[index + 5])
             st.image(recommended_movie_posters[index + 5])
 
+
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# RATHER THAN USING STREAMLIT, USING 'FLASK' IS RECOMMENDED
+# COZ USING STREAMLIT LIMITIZES THE CREATIVITY TO USE DIFFERENT DESIGNS USING CSS, WHICH STREAMLIT DOESNOT OFFER
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
