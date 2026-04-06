@@ -45,6 +45,22 @@ def recommend(movie):
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
 
+# Displays a clickable LinkedIn link in the top right of the page
+
+st.markdown(
+    """
+    <div style='display: flex; justify-content: flex-end; align-items: center;'>
+        <b style='margin-right: 15px; font-size: 16px;'>Credits : </b>
+        <a href='https://github.com/Ashura369' target='_blank'>
+            <img src='https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white' style='margin-right: 10px;'>
+        </a>
+        <a href='https://www.linkedin.com/in/ashura369' target='_blank'>
+            <img src='https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white'>
+        </a>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 # Displays the big heading title on the page
 st.title('Movie Recommendation System')
@@ -57,7 +73,6 @@ notification_option = st.selectbox(
 
 movie_option = st.selectbox("Select a movie", movies_list)
 st.write("MOVIE SELECTED :", movie_option)           # used to write lines
-
 
 
 # making a button
