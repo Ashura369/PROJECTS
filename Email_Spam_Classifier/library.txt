@@ -5,3 +5,5 @@ matplotlib
 nltk
 scikit-learn
 wordcloud
+svm
+xgboost
