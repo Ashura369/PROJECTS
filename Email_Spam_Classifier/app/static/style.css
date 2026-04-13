@@ -275,3 +275,61 @@ input:focus, textarea:focus {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Footer Credits */
+.footer-credits {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    animation: fadeIn 1s ease-out 0.5s both;
+    z-index: 1000;
+}
+
+.footer-credits span {
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.linkedin-btn {
+    color: #ffffff;
+}
+.linkedin-btn:hover {
+    background: #0077b5;
+    border-color: #0077b5;
+    box-shadow: 0 5px 15px rgba(0, 119, 181, 0.4);
+}
+
+.github-btn {
+    color: #ffffff;
+}
+.github-btn:hover {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}
