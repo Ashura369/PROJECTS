@@ -1,26 +1,37 @@
-{% extend "base.html" %}
+{% extends "base.html" %}
 
 
 {% block title %} page_1 {% endblock %}
 
 {% block main %}
 
-    <h1>Welcome to the SMS Spam Classifier</h1>
+    <div class="card">
+        <h1>Secure Registration</h1>
+        <p>Register to access the state-of-the-art AI spam classification engine.</p>
 
-    <form method="POST" action="/home" class="registration_form">
+        <form method="POST" action="/home" class="registration_form">
+            {{ form.hidden_tag() }}
 
-        {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label>{{ form.name.label }}</label>
+                {{ form.name(class='details', placeholder='Alex Johnson') }}
+            </div>
 
-        {{ form.name.label }}<br>
-        {{ form.name(class='details', placeholder='Enter your full name') }}<br>
+            <div class="form-group">
+                <label>{{ form.email.label }}</label>
+                {{ form.email(class='details', placeholder='alex@company.com') }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.number.label }}</label>
+                {{ form.number(class='details', placeholder='+1 555-0123') }}
+            </div>
 
-        
-
-    </form>
-
-
-
-
-
+            <button type="submit" class="btn">
+                <span>Access Sentinel</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+            </button>
+        </form>
+    </div>
 
 {% endblock %}

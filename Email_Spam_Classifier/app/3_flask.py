@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, flash, redirect, session, request
+import os
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
@@ -11,9 +12,14 @@ app = Flask(__name__)
 # Secret key is REQUIRED for CSRF protection and flashing messages
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 
+# -----------------------------------------------------------------------------------------------------------------
+
+# Use absolute paths relative to this script's location
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 # receiving the files
-tfidf = pickle.load(open('tfidf.pkl','rb'))
-model = pickle.load(open('MultinomialNB.pkl','rb'))
+tfidf = pickle.load(open(os.path.join(basedir, 'tfidf.pkl'), 'rb'))
+model = pickle.load(open(os.path.join(basedir, 'MultinomialNB.pkl'), 'rb'))
 
 st = PorterStemmer()
 stop_words = stopwords.words('english')
@@ -24,7 +30,6 @@ def transform(txt):
     
     temp = []
     for word in txt:
-        # Fixed 'i' to 'word'
         if word.isalnum() and word not in stop_words:
             temp.append(word)
     
@@ -53,10 +58,10 @@ def index():
     # Redirect root to /home so users don't get a 404 error
     return redirect(url_for('home'))
 
+# -----------------------------------------------------------------------------------------------------------------
+
 @app.route("/home", methods=['GET','POST'])
 def home():
-    # Initializing variables to None to prevent UnboundLocalError
-    username = email = number = None
 
     form = Registration()
     if form.validate_on_submit():
@@ -65,9 +70,49 @@ def home():
         number = form.number.data
 
         flash(f"Welcome {username}, [{email}] !", "success")
+        return redirect(url_for('mails'))
 
     # Fixed: Passing 'form=form' so the HTML can render the fields
-    return render_template("page_1.html", form=form, name=username, email=email, number=number)
+    return render_template("page_1.html", form=form)
+
+# -----------------------------------------------------------------------------------------------------------------
+
+@app.route("/mails", methods=['GET', 'POST'])
+def mails():
+
+    prediction = None
+    if request.method == 'POST':
+        # receiving input text from page_2
+        text = request.form.get("email_content")
+
+        if text:
+            text_transformed = transform(text)
+            text_vectorized = tfidf.transform([text_transformed])
+
+            result = model.predict(text_vectorized)[0]
+            
+            # Debug logging
+            print(f"DEBUG: Processing text: {text[:50]}...")
+            print(f"DEBUG: Transformed: {text_transformed[:50]}...")
+            print(f"DEBUG: Prediction Result: {result}")
+
+            if result == 1:
+                prediction = "SPAM"
+                flash("Analysis complete: High probability of spam detected.", "danger")
+            else:
+                prediction = "NOT A SPAM"
+                flash("Analysis complete: Content remains verified clear.", "success")
+
+    return render_template("page_2.html", prediction=prediction)
+
+
+
+
+
+
+
+# -----------------------------------------------------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     app.run(debug=True)
