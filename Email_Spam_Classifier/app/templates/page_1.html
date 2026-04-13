@@ -1,0 +1,26 @@
+{% extend "base.html" %}
+
+
+{% block title %} page_1 {% endblock %}
+
+{% block main %}
+
+    <h1>Welcome to the SMS Spam Classifier</h1>
+
+    <form method="POST" action="/home" class="registration_form">
+
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label }}<br>
+        {{ form.name(class='details', placeholder='Enter your full name') }}<br>
+
+        
+
+    </form>
+
+
+
+
+
+
+{% endblock %}
