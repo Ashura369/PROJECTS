@@ -5,6 +5,9 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 import pickle
 import nltk
+nltk.download('stopwords', quiet=True)
+nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 

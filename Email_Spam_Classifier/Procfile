@@ -1,0 +1,1 @@
+web: gunicorn --chdir app 3_flask:app
