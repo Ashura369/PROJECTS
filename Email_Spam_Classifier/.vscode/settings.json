@@ -1,4 +1,8 @@
 {
-    "python.defaultInterpreterPath": "environment_spamDetection\\Scripts\\python.exe",
-    "python.terminal.activateEnvironment": true
+    "python.defaultInterpreterPath": "${workspaceFolder}\\environment_spamDetection\\Scripts\\python.exe",
+    "python.terminal.activateEnvironment": true,
+    "python.venvPath": "${workspaceFolder}",
+    "python.venvFolders": [
+        "environment_spamDetection"
+    ]
 }
