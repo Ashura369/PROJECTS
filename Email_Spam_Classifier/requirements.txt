@@ -9,3 +9,4 @@ xgboost
 flask
 flask-wtf
 gunicorn
+email-validator
