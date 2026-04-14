@@ -1,0 +1,36 @@
+# -----------------------------
+# 1. MASSIVE VIRTUAL ENVIRONMENTS
+# -----------------------------
+environment_spamDetection/
+venv/
+.env/
+
+# -----------------------------
+# 2. RAW DEVELOPMENT DATASETS
+# -----------------------------
+# (The server only needs your .pkl models, not the raw CSVs!)
+spam.csv
+spam_ham_dataset.csv
+
+# -----------------------------
+# 3. JUPYTER NOTEBOOKS
+# -----------------------------
+# (Your training code isn't needed by the live web server)
+1_data_cleaning.ipynb
+2_model_building.ipynb
+
+# -----------------------------
+# 4. RANDOM LOGS / TEXT FILES
+# -----------------------------
+library.txt
+info.txt
+fix_model.py
+
+# -----------------------------
+# 5. PYTHON CACHE & IDE SETTINGS
+# -----------------------------
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+.ipynb_checkpoints/
