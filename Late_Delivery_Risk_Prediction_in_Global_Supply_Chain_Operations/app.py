@@ -65,7 +65,7 @@ def load_ml_objects():
 # Header
 st.markdown("""
 <div class="header-style">
-    <h1>🚚 APL Logistics - Late Delivery Risk Predictor</h1>
+    <h1>APL Logistics - Late Delivery Risk Predictor</h1>
     <p>Predict supply chain delivery status and identify potential delays using tuned machine learning models.</p>
 </div>
 """, unsafe_allow_html=True)
