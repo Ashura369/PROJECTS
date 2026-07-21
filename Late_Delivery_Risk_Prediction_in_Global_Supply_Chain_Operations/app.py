@@ -11,7 +11,6 @@ sys.modules['_loss'] = sklearn._loss.loss
 
 # Determine the absolute directory path of this script to handle paths dynamically on Streamlit Cloud
 base_dir = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(base_dir, "dataset", "APL_Logistics.csv")
 model_path = os.path.join(base_dir, "late_delivery_model.pkl")
 encoder_path = os.path.join(base_dir, "target_encoder.pkl")
 
@@ -53,24 +52,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 1. Cache Dataset Loading
-@st.cache_data
-def load_data():
-    if not os.path.exists(csv_path):
-        st.error(f"Dataset not found at '{csv_path}'. Please check the folder structure.")
-        return None
-    df = pd.read_csv(csv_path, encoding='latin1')
-    # Apply column name mappings used in the notebook
-    df = df.rename(columns={
-        'Type': 'Payment Method',
-        'Late_delivery_risk': 'Late Delivery ?',
-        'Category Name': 'Product Category',
-        'Sales': 'Total Sales',
-        'Order Item Total': 'Price After Discount'
-    })
-    return df
-
-# 2. Cache Model & Encoder Loading
+# Cache Model & Encoder Loading
 @st.cache_resource
 def load_ml_objects():
     if not os.path.exists(model_path) or not os.path.exists(encoder_path):
@@ -88,10 +70,19 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-df = load_data()
 model, encoder = load_ml_objects()
 
-if df is not None and model is not None and encoder is not None:
+if model is not None and encoder is not None:
+    # Extract category choices dynamically from the loaded target encoder
+    cat_cols = [
+        'Payment Method', 'Delivery Status', 'Product Category', 'Customer City', 'Customer Country', 
+        'Customer Segment', 'Customer State', 'Department Name', 'Market', 'Order City', 
+        'Order Country', 'Order Region', 'Order State', 'Product Name', 'Shipping Mode'
+    ]
+    categories = {}
+    for idx, col in enumerate(cat_cols):
+        categories[col] = sorted(list(encoder.categories_[idx]))
+
     st.sidebar.header("Navigation & Options")
     st.sidebar.info("Fill out the order and shipment details across the tabs, then click 'Predict Delivery Risk' at the bottom.")
 
@@ -109,23 +100,23 @@ if df is not None and model is not None and encoder is not None:
         with col1:
             payment_method = st.selectbox(
                 'Payment Method', 
-                options=sorted(df['Payment Method'].unique())
+                options=categories['Payment Method']
             )
             delivery_status = st.selectbox(
                 'Delivery Status', 
-                options=sorted(df['Delivery Status'].unique()),
+                options=categories['Delivery Status'],
                 help="Warning: If keeping this in active features, it serves as a strong predictor."
             )
         with col2:
             shipping_mode = st.selectbox(
                 'Shipping Mode', 
-                options=sorted(df['Shipping Mode'].unique())
+                options=categories['Shipping Mode']
             )
             days_shipment = st.slider(
                 'Days for shipment (scheduled)', 
                 min_value=0, 
                 max_value=10, 
-                value=int(df['Days for shipment (scheduled)'].median())
+                value=3
             )
 
     with tab_prod:
@@ -134,54 +125,52 @@ if df is not None and model is not None and encoder is not None:
         with col1:
             product_category = st.selectbox(
                 'Product Category', 
-                options=sorted(df['Product Category'].unique())
+                options=categories['Product Category']
             )
-            # Dynamically filter product names based on selected category
-            filtered_products = df[df['Product Category'] == product_category]['Product Name'].unique()
             product_name = st.selectbox(
                 'Product Name', 
-                options=sorted(filtered_products)
+                options=categories['Product Name']
             )
             dept_name = st.selectbox(
                 'Department Name', 
-                options=sorted(df['Department Name'].unique())
+                options=categories['Department Name']
             )
             product_price = st.number_input(
                 'Product Price ($)', 
                 min_value=0.0, 
-                value=float(df['Product Price'].mean())
+                value=120.0
             )
             quantity = st.slider(
                 'Order Item Quantity', 
                 min_value=1, 
                 max_value=20, 
-                value=int(df['Order Item Quantity'].median())
+                value=1
             )
         with col2:
             total_sales = st.number_input(
                 'Total Sales ($)', 
                 min_value=0.0, 
-                value=float(df['Total Sales'].mean())
+                value=150.0
             )
             price_discount = st.number_input(
                 'Price After Discount ($)', 
                 min_value=0.0, 
-                value=float(df['Price After Discount'].mean())
+                value=130.0
             )
             discount = st.number_input(
                 'Order Item Discount ($)', 
                 min_value=0.0, 
-                value=float(df['Order Item Discount'].mean())
+                value=20.0
             )
             discount_rate = st.slider(
                 'Order Item Discount Rate', 
                 min_value=0.0, 
                 max_value=1.0, 
-                value=float(df['Order Item Discount Rate'].mean())
+                value=0.1
             )
             profit_ratio = st.number_input(
                 'Order Item Profit Ratio', 
-                value=float(df['Order Item Profit Ratio'].mean())
+                value=0.2
             )
 
     with tab_cust:
@@ -190,36 +179,32 @@ if df is not None and model is not None and encoder is not None:
         with col1:
             cust_country = st.selectbox(
                 'Customer Country', 
-                options=sorted(df['Customer Country'].unique())
+                options=categories['Customer Country']
             )
-            # Dynamically filter customer states based on selected country
-            cust_states = df[df['Customer Country'] == cust_country]['Customer State'].unique()
             cust_state = st.selectbox(
                 'Customer State', 
-                options=sorted(cust_states)
+                options=categories['Customer State']
             )
-            # Dynamically filter customer cities based on selected state
-            cust_cities = df[df['Customer State'] == cust_state]['Customer City'].unique()
             cust_city = st.selectbox(
                 'Customer City', 
-                options=sorted(cust_cities)
+                options=categories['Customer City']
             )
         with col2:
             cust_segment = st.selectbox(
                 'Customer Segment', 
-                options=sorted(df['Customer Segment'].unique())
+                options=categories['Customer Segment']
             )
             cust_zipcode = st.number_input(
                 'Customer Zipcode', 
-                value=float(df['Customer Zipcode'].median() or 0.0)
+                value=72501.0
             )
             latitude = st.number_input(
                 'Latitude', 
-                value=float(df['Latitude'].mean())
+                value=18.2
             )
             longitude = st.number_input(
                 'Longitude', 
-                value=float(df['Longitude'].mean())
+                value=-66.0
             )
 
     with tab_dest:
@@ -228,32 +213,24 @@ if df is not None and model is not None and encoder is not None:
         with col1:
             order_market = st.selectbox(
                 'Market', 
-                options=sorted(df['Market'].unique())
+                options=categories['Market']
             )
-            # Dynamically filter order countries based on selected market
-            order_countries = df[df['Market'] == order_market]['Order Country'].unique()
             order_country = st.selectbox(
                 'Order Country', 
-                options=sorted(order_countries)
+                options=categories['Order Country']
             )
-            # Dynamically filter order regions based on selected country
-            order_regions = df[df['Order Country'] == order_country]['Order Region'].unique()
             order_region = st.selectbox(
                 'Order Region', 
-                options=sorted(order_regions)
+                options=categories['Order Region']
             )
         with col2:
-            # Dynamically filter order states based on selected country
-            order_states = df[df['Order Country'] == order_country]['Order State'].unique()
             order_state = st.selectbox(
                 'Order State', 
-                options=sorted(order_states)
+                options=categories['Order State']
             )
-            # Dynamically filter order cities based on selected state
-            order_cities = df[df['Order State'] == order_state]['Order City'].unique()
             order_city = st.selectbox(
                 'Order City', 
-                options=sorted(order_cities)
+                options=categories['Order City']
             )
 
     # 3. Assemble and Predict
@@ -297,12 +274,6 @@ if df is not None and model is not None and encoder is not None:
         input_df = input_df[features_list]
 
         # Target encode categorical columns
-        cat_cols = [
-            'Payment Method', 'Delivery Status', 'Product Category', 'Customer City', 'Customer Country', 
-            'Customer Segment', 'Customer State', 'Department Name', 'Market', 'Order City', 
-            'Order Country', 'Order Region', 'Order State', 'Product Name', 'Shipping Mode'
-        ]
-        
         input_df_encoded = input_df.copy()
         input_df_encoded[cat_cols] = encoder.transform(input_df[cat_cols])
 
@@ -324,4 +295,4 @@ if df is not None and model is not None and encoder is not None:
             st.error(f"An error occurred during model prediction: {str(e)}")
             st.info("Ensure the Python packages and scikit-learn models are compatible with version changes.")
 else:
-    st.warning("Please ensure the CSV dataset and model pickle files are properly populated before predicting.")
+    st.warning("Please ensure the model pickle files are properly populated before predicting.")
