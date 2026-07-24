@@ -123,9 +123,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Load Trained Model Assets
+import os
+
 @st.cache_resource
 def load_assets():
-    with open("sentiment_analysis_model.pkl", "rb") as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "sentiment_analysis_model.pkl")
+    if not os.path.exists(model_path):
+        model_path = "sentiment_analysis_model.pkl"
+        
+    with open(model_path, "rb") as f:
         assets = pickle.load(f)
     return assets
 
