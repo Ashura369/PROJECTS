@@ -124,6 +124,13 @@ st.markdown("""
 
 # Load Trained Model Assets
 import os
+import sklearn.compose._column_transformer
+
+# Backward compatibility patch for ColumnTransformer unpickling
+if not hasattr(sklearn.compose._column_transformer, '_RemainderColsList'):
+    class _RemainderColsList(list):
+        pass
+    sklearn.compose._column_transformer._RemainderColsList = _RemainderColsList
 
 @st.cache_resource
 def load_assets():
