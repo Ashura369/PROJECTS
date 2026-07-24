@@ -149,18 +149,21 @@ def load_assets():
     if not os.path.exists(model_path):
         model_path = "sentiment_analysis_model.pkl"
         
-    with open(model_path, "rb") as f:
-        assets = pickle.load(f)
-    return assets
+    try:
+        with open(model_path, "rb") as f:
+            assets = pickle.load(f)
+        return assets
+    except Exception as e:
+        st.error(f"Error loading model asset `sentiment_analysis_model.pkl`: {e}")
+        return None
 
-try:
-    assets = load_assets()
-    vectorizer = assets['vectorizer']
-    processor = assets['processor']
-    model = assets['model']
+assets = load_assets()
+if assets is not None:
+    vectorizer = assets.get('vectorizer')
+    processor = assets.get('processor')
+    model = assets.get('model')
     model_loaded = True
-except Exception as e:
-    st.error(f"Error loading model asset `sentiment_analysis_model.pkl`: {e}")
+else:
     model_loaded = False
 
 # Application Header
