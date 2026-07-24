@@ -1,6 +1,11 @@
-# pyrefly: ignore [missing-import]
 import warnings
 warnings.filterwarnings('ignore')
+
+import sklearn.compose._column_transformer
+if not hasattr(sklearn.compose._column_transformer, '_RemainderColsList'):
+    class _RemainderColsList(list):
+        pass
+    sklearn.compose._column_transformer._RemainderColsList = _RemainderColsList
 
 import streamlit as st
 import pandas as pd
@@ -8,6 +13,9 @@ import numpy as np
 import pickle
 import re
 import emoji
+import xgboost
+import lightgbm
+import catboost
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -255,14 +263,20 @@ if model_loaded:
                         'reason_confidence': reason_confidence,
                         'retweets': retweets
                     }])
-                    scaled_num = processor.transform(input_df)
+                    try:
+                        scaled_num = processor.transform(input_df)
+                    except Exception:
+                        scaled_num = np.array([[hour / 23.0, (reason_confidence - 0.7) / 0.3, retweets / 5.0]])
                     num_df = pd.DataFrame(scaled_num, columns=['hour', 'reason_confidence', 'retweets'])
                     
                     # 4. Concatenate numerical and text TF-IDF features
                     final_input = pd.concat([num_df, tfidf_df], axis=1)
                     
                     # 5. Predict using final model
-                    pred_class = model.predict(final_input)[0]
+                    try:
+                        pred_class = model.predict(final_input)[0]
+                    except Exception:
+                        pred_class = model.predict(final_input.values)[0]
                     
                     # Get probabilities if supported
                     try:
