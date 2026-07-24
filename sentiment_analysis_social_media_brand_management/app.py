@@ -45,12 +45,11 @@ def transform(txt):
 # Page Configuration
 st.set_page_config(
     page_title="Airline Sentiment Analysis Dashboard",
-    page_icon="✈️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Premium UI
+# Custom CSS for Professional UI
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
@@ -156,8 +155,8 @@ except Exception as e:
 # Application Header
 st.markdown("""
 <div class="main-header">
-    <h1>✈️ Airline Brand Sentiment Analyzer</h1>
-    <p>Real-Time NLP & GPU Gradient Boosted Intelligence for Proactive Customer Care</p>
+    <h1>Airline Brand Sentiment Analyzer</h1>
+    <p>Real-Time Natural Language Processing & Sentiment Intelligence</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -165,7 +164,7 @@ if model_loaded:
     col_left, col_right = st.columns([1, 1], gap="large")
 
     with col_left:
-        st.subheader("📝 Customer Feedback Input")
+        st.subheader("Customer Feedback Input")
         
         # Sample presets
         st.caption("Click a sample preset or enter custom feedback:")
@@ -175,18 +174,18 @@ if model_loaded:
         default_airline = "United"
         default_reason = "Customer Service Issue"
         
-        if preset_cols[0].button("❌ Cancelled Flight", use_container_width=True):
-            tweet_input = "My flight was cancelled at the last minute and no staff helped us rebook! Horrible experience. 😡"
+        if preset_cols[0].button("Cancelled Flight", use_container_width=True):
+            tweet_input = "My flight was cancelled at the last minute and no staff helped us rebook! Horrible experience."
             default_airline = "United"
             default_reason = "Cancelled Flight"
             
-        if preset_cols[1].button("😐 Inquiry / Update", use_container_width=True):
+        if preset_cols[1].button("Inquiry / Update", use_container_width=True):
             tweet_input = "Can someone confirm if the 4:30 PM flight from Chicago is on schedule?"
             default_airline = "Delta"
             default_reason = "Can't Tell"
             
-        if preset_cols[2].button("💚 Excellent Service", use_container_width=True):
-            tweet_input = "Huge thanks to the crew on flight 204! Amazing customer service and smooth flight. 💕"
+        if preset_cols[2].button("Positive Service", use_container_width=True):
+            tweet_input = "Huge thanks to the crew on flight 204! Amazing customer service and smooth flight."
             default_airline = "Virgin_America"
             default_reason = "Customer Service Issue"
 
@@ -229,10 +228,10 @@ if model_loaded:
                 reason_confidence = st.slider("Reason Confidence Score", 0.0, 1.0, 0.85, step=0.05)
                 retweets = st.number_input("Retweet Count", min_value=0, max_value=1000, value=0)
 
-            submit_btn = st.form_submit_button("🔍 Analyze Sentiment", type="primary", use_container_width=True)
+            submit_btn = st.form_submit_button("Analyze Sentiment", type="primary", use_container_width=True)
 
     with col_right:
-        st.subheader("📊 Sentiment Analysis Results")
+        st.subheader("Sentiment Analysis Results")
         
         if submit_btn or feedback_text.strip():
             if not feedback_text.strip():
@@ -274,11 +273,11 @@ if model_loaded:
                     # Display Large Badge
                     st.markdown("### Predicted Sentiment:")
                     if pred_label == "Negative":
-                        st.markdown(f'<div class="badge-negative">🔴 Negative Sentiment</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="badge-negative">Negative Sentiment</div>', unsafe_allow_html=True)
                     elif pred_label == "Neutral":
-                        st.markdown(f'<div class="badge-neutral">🔵 Neutral Sentiment</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="badge-neutral">Neutral Sentiment</div>', unsafe_allow_html=True)
                     else:
-                        st.markdown(f'<div class="badge-positive">🟢 Positive Sentiment</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="badge-positive">Positive Sentiment</div>', unsafe_allow_html=True)
                     
                     st.write("")
                     
@@ -287,17 +286,17 @@ if model_loaded:
                         st.markdown("#### Class Confidence Probabilities:")
                         p_neg, p_neu, p_pos = probs[0], probs[1], probs[2]
                         
-                        st.write(f"🔴 **Negative:** {p_neg*100:.1f}%")
+                        st.write(f"**Negative:** {p_neg*100:.1f}%")
                         st.progress(float(p_neg))
                         
-                        st.write(f"🔵 **Neutral:** {p_neu*100:.1f}%")
+                        st.write(f"**Neutral:** {p_neu*100:.1f}%")
                         st.progress(float(p_neu))
                         
-                        st.write(f"🟢 **Positive:** {p_pos*100:.1f}%")
+                        st.write(f"**Positive:** {p_pos*100:.1f}%")
                         st.progress(float(p_pos))
 
                     # Inspection Expander
-                    with st.expander("🛠️ Inspect NLP Preprocessing & Feature Pipeline"):
+                    with st.expander("Inspect NLP Preprocessing & Feature Pipeline"):
                         st.markdown("**Combined Raw Feature Input:**")
                         st.code(combined_text_raw)
                         st.markdown("**Cleaned & Demojized Tokens:**")
