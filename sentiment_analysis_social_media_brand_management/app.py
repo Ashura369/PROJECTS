@@ -30,6 +30,10 @@ def setup_nltk():
     except LookupError:
         nltk.download('punkt')
     try:
+        nltk.data.find('tokenizers/punkt_tab')
+    except LookupError:
+        nltk.download('punkt_tab')
+    try:
         nltk.data.find('corpora/stopwords')
     except LookupError:
         nltk.download('stopwords')
@@ -49,7 +53,10 @@ def transform(txt):
     txt = re.sub(r'https?://\S+|www\.\S+', '', txt)    
     txt = re.sub(r'@\S+', '', txt)                     
     txt = emoji.demojize(txt)                           
-    txt = word_tokenize(txt)
+    try:
+        txt = word_tokenize(txt)
+    except Exception:
+        txt = txt.split()
     temp = [lmt.lemmatize(word, pos='v') for word in txt if word not in stop_words and (word.isalpha() or (word.startswith(':') and word.endswith(':')))]
     return " ".join(temp)
 
@@ -224,11 +231,6 @@ if model_loaded:
                     ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
                     index=1
                 )
-                timezone = st.selectbox(
-                    "User Timezone",
-                    ["Eastern_Time", "Central_Time", "Pacific_Time", "Mountain_Time", "Quito", "London"],
-                    index=0
-                )
                 
             with f_col2:
                 reason = st.selectbox(
@@ -238,9 +240,16 @@ if model_loaded:
                     index=["Customer Service Issue", "Late Flight", "Cancelled Flight", "Lost Luggage", 
                            "Bad Flight", "Flight Booking Problems", "Flight Attendant Complaints", "longlines", "Damaged Luggage", "Can't Tell"].index(default_reason)
                 )
-                hour = st.slider("Tweet Hour (0-23)", 0, 23, 14)
-                reason_confidence = st.slider("Reason Confidence Score", 0.0, 1.0, 0.85, step=0.05)
-                retweets = st.number_input("Retweet Count", min_value=0, max_value=1000, value=0)
+                timezone = st.selectbox(
+                    "User Timezone",
+                    ["Eastern_Time", "Central_Time", "Pacific_Time", "Mountain_Time", "Quito", "London"],
+                    index=0
+                )
+
+            # Default values for internal feature scaling
+            hour = 14
+            reason_confidence = 0.85
+            retweets = 0
 
             submit_btn = st.form_submit_button("Analyze Sentiment", type="primary", use_container_width=True)
 
