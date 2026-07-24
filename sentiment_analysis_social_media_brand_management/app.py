@@ -175,17 +175,17 @@ if model_loaded:
         default_airline = "United"
         default_reason = "Customer Service Issue"
         
-        if preset_cols[0].button("Cancelled Flight", use_container_width=True):
+        if preset_cols[0].button("❌ Cancelled Flight", use_container_width=True):
             tweet_input = "My flight was cancelled at the last minute and no staff helped us rebook! Horrible experience. 😡"
             default_airline = "United"
             default_reason = "Cancelled Flight"
             
-        if preset_cols[1].button("Inquiry / Update", use_container_width=True):
+        if preset_cols[1].button("😐 Inquiry / Update", use_container_width=True):
             tweet_input = "Can someone confirm if the 4:30 PM flight from Chicago is on schedule?"
             default_airline = "Delta"
             default_reason = "Can't Tell"
             
-        if preset_cols[2].button("Excellent Service", use_container_width=True):
+        if preset_cols[2].button("💚 Excellent Service", use_container_width=True):
             tweet_input = "Huge thanks to the crew on flight 204! Amazing customer service and smooth flight. 💕"
             default_airline = "Virgin_America"
             default_reason = "Customer Service Issue"
@@ -274,11 +274,11 @@ if model_loaded:
                     # Display Large Badge
                     st.markdown("### Predicted Sentiment:")
                     if pred_label == "Negative":
-                        st.markdown(f'<div class="badge-negative">Negative Sentiment</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="badge-negative">🔴 Negative Sentiment</div>', unsafe_allow_html=True)
                     elif pred_label == "Neutral":
-                        st.markdown(f'<div class="badge-neutral">Neutral Sentiment</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="badge-neutral">🔵 Neutral Sentiment</div>', unsafe_allow_html=True)
                     else:
-                        st.markdown(f'<div class="badge-positive">Positive Sentiment</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="badge-positive">🟢 Positive Sentiment</div>', unsafe_allow_html=True)
                     
                     st.write("")
                     
@@ -287,13 +287,13 @@ if model_loaded:
                         st.markdown("#### Class Confidence Probabilities:")
                         p_neg, p_neu, p_pos = probs[0], probs[1], probs[2]
                         
-                        st.write(f"**Negative:** {p_neg*100:.1f}%")
+                        st.write(f"🔴 **Negative:** {p_neg*100:.1f}%")
                         st.progress(float(p_neg))
                         
-                        st.write(f"**Neutral:** {p_neu*100:.1f}%")
+                        st.write(f"🔵 **Neutral:** {p_neu*100:.1f}%")
                         st.progress(float(p_neu))
                         
-                        st.write(f"**Positive:** {p_pos*100:.1f}%")
+                        st.write(f"🟢 **Positive:** {p_pos*100:.1f}%")
                         st.progress(float(p_pos))
 
                     # Inspection Expander
