@@ -1,6 +1,12 @@
-numpy
+streamlit
 pandas
+numpy
 scikit-learn
-
-seaborn
+nltk
+cleantext
+emoji
+xgboost
+lightgbm
+catboost
 matplotlib
+seaborn 
