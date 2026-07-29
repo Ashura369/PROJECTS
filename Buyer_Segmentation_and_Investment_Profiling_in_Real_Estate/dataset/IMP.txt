@@ -1,0 +1,5 @@
+Here the files named as 'clients' and 'properties', they are the original datasets. 
+Rest of the files are also the datasets, but were created duing the Feature Engineering.
+
+'Full Dataset' --> This file is the raw dataset combined both 'clients' and 'properties'.
+Consider this dataset in future for any changes.
