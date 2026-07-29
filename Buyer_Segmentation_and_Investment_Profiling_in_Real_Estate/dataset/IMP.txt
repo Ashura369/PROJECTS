@@ -1,5 +1,7 @@
 Here the files named as 'clients' and 'properties', they are the original datasets. 
-Rest of the files are also the datasets, but were created duing the Feature Engineering.
+Rest of the files are also the datasets, but were created duing the Feature Engineering process.
 
-'Full Dataset' --> This file is the raw dataset combined both 'clients' and 'properties'.
+'Full Dataset' ---> This file is the raw dataset combining both 'clients' and 'properties'.
 Consider this dataset in future for any changes.
+
+'PowerBI Dataset' ---> This file contains the data which is only for plotting visualisations in PowerBI, matplotlib, and seaborn.
