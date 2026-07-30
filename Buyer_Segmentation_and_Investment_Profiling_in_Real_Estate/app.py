@@ -37,11 +37,8 @@ def load_data():
     # analyzing only actual buyers!
     df = df[df['buyers_type'] != 'NO BUYERS']
     
-    # Filling any empty values in categorical columns for cleaner filters
-    df['country'] = df['country'].fillna('Unknown')
-    df['region'] = df['region'].fillna('Unknown')
-    df['acquisition_purpose'] = df['acquisition_purpose'].fillna('Unknown')
-    df['client_type'] = df['client_type'].fillna('Unknown')
+    # Drop rows with missing categorical data to avoid "Unknown" options in filters
+    df = df.dropna(subset=['country', 'region', 'acquisition_purpose', 'client_type'])
     
     return df
 
@@ -50,30 +47,35 @@ df = load_data()
 # --- 2. SIDEBAR FILTERS ---
 st.sidebar.header("User Controls")
 
-# A helper function to create multi-selects with "All" option easily handled
-def multiselect_filter(label, options):
-    selected = st.sidebar.multiselect(label, options=options, default=options)
-    return selected
-
-countries = sorted(df['country'].unique())
-selected_countries = multiselect_filter("Filter by Country", countries)
-
-regions = sorted(df[df['country'].isin(selected_countries)]['region'].unique())
-selected_regions = multiselect_filter("Filter by Region", regions)
-
-purposes = sorted(df['acquisition_purpose'].unique())
-selected_purposes = multiselect_filter("Filter by Acquisition Purpose", purposes)
-
-client_types = sorted(df['client_type'].unique())
-selected_client_types = multiselect_filter("Filter by Client Type", client_types)
+with st.sidebar.form(key='filter_form'):
+    countries = sorted(df['country'].unique())
+    selected_countries = st.multiselect("Filter by Country", options=countries, default=[])
+    
+    regions = sorted(df['region'].unique())
+    selected_regions = st.multiselect("Filter by Region", options=regions, default=[])
+    
+    purposes = sorted(df['acquisition_purpose'].unique())
+    selected_purposes = st.multiselect("Filter by Acquisition Purpose", options=purposes, default=[])
+    
+    client_types = sorted(df['client_type'].unique())
+    selected_client_types = st.multiselect("Filter by Client Type", options=client_types, default=[])
+    
+    submit_button = st.form_submit_button(label='FILTER')
 
 # Applying Filters
-filtered_df = df[
-    (df['country'].isin(selected_countries)) &
-    (df['region'].isin(selected_regions)) &
-    (df['acquisition_purpose'].isin(selected_purposes)) &
-    (df['client_type'].isin(selected_client_types))
-]
+filtered_df = df.copy()
+
+if selected_countries:
+    filtered_df = filtered_df[filtered_df['country'].isin(selected_countries)]
+    
+if selected_regions:
+    filtered_df = filtered_df[filtered_df['region'].isin(selected_regions)]
+    
+if selected_purposes:
+    filtered_df = filtered_df[filtered_df['acquisition_purpose'].isin(selected_purposes)]
+    
+if selected_client_types:
+    filtered_df = filtered_df[filtered_df['client_type'].isin(selected_client_types)]
 
 st.markdown(f"**Showing data for {len(filtered_df):,} sold properties.**")
 
