@@ -66,7 +66,7 @@ with st.sidebar.form(key='filter_form'):
 filters_applied = bool(selected_countries or selected_regions or selected_purposes or selected_client_types)
 
 if not filters_applied:
-    st.info("👈 Please select your desired filters from the sidebar and click **FILTER** to generate the dashboard analytics.")
+    st.info("Please select your desired filters from the LEFT sidebar and click **FILTER** to generate the dashboard analytics.")
     st.stop()
 
 # Applying Filters
