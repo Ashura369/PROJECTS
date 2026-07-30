@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
+import plotly.express as px
 
 # Setting page config for a wider layout
 st.set_page_config(page_title="Real Estate Buyer Segmentation", layout="wide")
@@ -24,8 +26,12 @@ st.markdown("""
 # --- 1. DATA LOADING ---
 @st.cache_data
 def load_data():
-    # Reading the CSV!
-    df = pd.read_csv('dataset/final_dataset.csv')
+    # Construct the absolute path based on the location of this script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, 'dataset', 'final_dataset.csv')
+    
+    # Read the lightning-fast CSV!
+    df = pd.read_csv(file_path)
     
     # filtering out the unsold properties from the visualizations
     # analyzing only actual buyers!
