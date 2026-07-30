@@ -15,10 +15,10 @@ st.markdown("""
     <div style='display: flex; justify-content: flex-end; align-items: center;'>
         <b style='margin-right: 15px; font-size: 16px;'>Credits : </b>
         <a href='https://github.com/pradhans369' target='_blank'>
-            <img src='https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white' style='margin-right: 10px;'>
+            <img src='https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white' style='margin-right: 10px; border-radius: 8px;'>
         </a>
         <a href='https://www.linkedin.com/in/pradhans369/' target='_blank'>
-            <img src='https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white'>
+            <img src='https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white' style='border-radius: 8px;'>
         </a>
     </div>
 """, unsafe_allow_html=True)
