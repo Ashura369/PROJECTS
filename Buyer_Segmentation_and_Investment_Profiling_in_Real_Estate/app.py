@@ -45,7 +45,7 @@ def load_data():
 df = load_data()
 
 # --- 2. SIDEBAR FILTERS ---
-st.sidebar.header("User Controls")
+st.sidebar.header("Filter Data")
 
 with st.sidebar.form(key='filter_form'):
     countries = sorted(df['country'].unique())
