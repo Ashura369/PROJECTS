@@ -62,6 +62,13 @@ with st.sidebar.form(key='filter_form'):
     
     submit_button = st.form_submit_button(label='FILTER')
 
+# Check if any filters were actually selected
+filters_applied = bool(selected_countries or selected_regions or selected_purposes or selected_client_types)
+
+if not filters_applied:
+    st.info("👈 Please select your desired filters from the sidebar and click **FILTER** to generate the dashboard analytics.")
+    st.stop()
+
 # Applying Filters
 filtered_df = df.copy()
 
