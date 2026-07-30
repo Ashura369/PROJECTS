@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Set page config for a wider layout
+# Setting page config for a wider layout
 st.set_page_config(page_title="Real Estate Buyer Segmentation", layout="wide")
 
 st.title("Real Estate Buyer Segmentation Dashboard")
 st.markdown("This dashboard provides live analytics on our machine learning buyer segmentation model.")
 
+# Credits Section
 st.markdown("""
     <div style='display: flex; justify-content: flex-end; align-items: center;'>
         <b style='margin-right: 15px; font-size: 16px;'>Credits : </b>
@@ -23,14 +24,14 @@ st.markdown("""
 # --- 1. DATA LOADING ---
 @st.cache_data
 def load_data():
-    # Read the lightning-fast CSV!
+    # Reading the CSV!
     df = pd.read_csv('dataset/final_dataset.csv')
     
-    # Let's filter out the unsold properties from the visualizations
-    # so we only analyze actual buyers!
+    # filtering out the unsold properties from the visualizations
+    # analyzing only actual buyers!
     df = df[df['buyers_type'] != 'NO BUYERS']
     
-    # Fill any empty values in categorical columns for cleaner filters
+    # Filling any empty values in categorical columns for cleaner filters
     df['country'] = df['country'].fillna('Unknown')
     df['region'] = df['region'].fillna('Unknown')
     df['acquisition_purpose'] = df['acquisition_purpose'].fillna('Unknown')
@@ -43,7 +44,7 @@ df = load_data()
 # --- 2. SIDEBAR FILTERS ---
 st.sidebar.header("User Controls")
 
-# Helper function to create multi-selects with "All" option easily handled
+# A helper function to create multi-selects with "All" option easily handled
 def multiselect_filter(label, options):
     selected = st.sidebar.multiselect(label, options=options, default=options)
     return selected
@@ -60,7 +61,7 @@ selected_purposes = multiselect_filter("Filter by Acquisition Purpose", purposes
 client_types = sorted(df['client_type'].unique())
 selected_client_types = multiselect_filter("Filter by Client Type", client_types)
 
-# Apply Filters
+# Applying Filters
 filtered_df = df[
     (df['country'].isin(selected_countries)) &
     (df['region'].isin(selected_regions)) &
@@ -75,7 +76,6 @@ if len(filtered_df) == 0:
     st.stop()
 
 # --- 3. DASHBOARD MODULES ---
-
 col1, col2 = st.columns(2)
 
 # Module 1: Buyer Segmentation Overview
@@ -119,10 +119,10 @@ col3, col4 = st.columns([1.5, 1])
 with col3:
     st.subheader("Geographic Buyer Analysis")
     
-    # Group by region and buyer type
+    # Applying Group by region and buyer type
     geo_data = filtered_df.groupby(['region', 'buyers_type']).size().reset_index(name='Count')
     
-    # To keep the chart readable, let's only take the Top 15 Regions by volume if there are too many
+    # To keep the chart readable, taking only the Top 15 Regions by volume if there are too many
     top_regions = filtered_df['region'].value_counts().head(15).index
     geo_data_top = geo_data[geo_data['region'].isin(top_regions)]
     
@@ -144,12 +144,12 @@ with col4:
     st.subheader("Segment Insights Panel")
     st.markdown("Descriptive Statistics (Averages) per Cluster:")
     
-    # Calculate statistics
+    # Calculating statistics
     insights = filtered_df.groupby('buyers_type')[['age', 'sale_price', 'floor_area_sqft', 'satisfaction_score']].mean().round(2)
     
-    # Rename columns for presentation
+    # Renaming columns for presentation
     insights.columns = ['Avg Age', 'Avg Price ($)', 'Avg Area (sqft)', 'Avg Satisfaction (1-5)']
     insights.index.name = 'Buyer Segment'
     
-    # Display as a beautiful dataframe
+    # Displaying as a beautiful dataframe
     st.dataframe(insights, use_container_width=True)
