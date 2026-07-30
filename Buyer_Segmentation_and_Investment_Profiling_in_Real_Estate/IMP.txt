@@ -1,0 +1,3 @@
+'model.pkl' ---> model trained to produce the output
+
+'preprocessor.pkl' ---> preprocessing required to train the model
