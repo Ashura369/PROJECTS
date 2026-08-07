@@ -73,13 +73,19 @@ with st.sidebar:
     if dark_mode:
         st.markdown("""
             <style>
-                .stApp { background-color: #0e1117 !important; }
-                [data-testid="stSidebar"] { background-color: #262730 !important; }
-                [data-testid="stHeader"] { background-color: #0e1117 !important; }
-                h1, h2, h3, p, span, label, div[data-testid="stMarkdownContainer"] { color: #FAFAFA !important; }
-                .streamlit-expanderHeader { color: #FAFAFA !important; background-color: #262730 !important; border-radius: 4px; }
+                /* Force core backgrounds */
+                html, body, [data-testid="stAppViewContainer"] { background-color: #0E1117 !important; }
+                [data-testid="stSidebar"], [data-testid="stSidebarNav"] { background-color: #262730 !important; }
+                [data-testid="stHeader"] { background-color: #0E1117 !important; }
+                
+                /* Force all text elements to be readable */
+                h1, h2, h3, h4, h5, h6, p, span, label, div { color: #FAFAFA !important; }
+                
+                /* Fix specific interactive components */
+                .streamlit-expanderHeader { background-color: #262730 !important; border: 1px solid #555 !important; }
                 [data-testid="collapsedControl"] { background-color: #262730 !important; }
                 [data-testid="collapsedControl"]::after { color: #FAFAFA !important; }
+                .stButton > button { background-color: #333 !important; border: 1px solid #666 !important; }
             </style>
         """, unsafe_allow_html=True)
     
