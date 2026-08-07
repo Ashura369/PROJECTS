@@ -55,7 +55,7 @@ with st.sidebar:
     # Credits Section
     st.markdown("""
         <div style='display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px;'>
-            <b style='margin-bottom: 10px; font-size: 14px; color: #555;'>Developer Credits:</b>
+            <b style='margin-bottom: 10px; font-size: 15px; font-weight: 900;'>Developer Credits:</b>
             <div style='display: flex; gap: 10px; flex-wrap: wrap;'>
                 <a href='https://github.com/pradhans369' target='_blank'>
                     <img src='https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white' style='border-radius: 4px;'>
@@ -67,6 +67,22 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
+    st.markdown("---")
+    
+    dark_mode = st.toggle("🌙 Dark Mode")
+    if dark_mode:
+        st.markdown("""
+            <style>
+                .stApp { background-color: #0e1117 !important; }
+                [data-testid="stSidebar"] { background-color: #262730 !important; }
+                [data-testid="stHeader"] { background-color: #0e1117 !important; }
+                h1, h2, h3, p, span, label, div[data-testid="stMarkdownContainer"] { color: #FAFAFA !important; }
+                .streamlit-expanderHeader { color: #FAFAFA !important; background-color: #262730 !important; border-radius: 4px; }
+                [data-testid="collapsedControl"] { background-color: #262730 !important; }
+                [data-testid="collapsedControl"]::after { color: #FAFAFA !important; }
+            </style>
+        """, unsafe_allow_html=True)
+    
     st.markdown("---")
     st.title("Navigation")
     
