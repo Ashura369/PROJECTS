@@ -505,6 +505,12 @@
           <groupfilter function='level-members' level='[Efficiency_Status]' />
         </groupfilter>
       </group>
+      <group caption='Action (Efficiency Status,Machine ID)' hidden='true' name='[Action (Efficiency Status,Machine ID)]' name-style='unqualified' user:auto-column='sheet_link'>
+        <groupfilter function='crossjoin'>
+          <groupfilter function='level-members' level='[Efficiency_Status]' />
+          <groupfilter function='level-members' level='[Machine ID]' />
+        </groupfilter>
+      </group>
       <group caption='Action (Efficiency Status,Month)' hidden='true' name='[Action (Efficiency Status,Month)]' name-style='unqualified' user:auto-column='sheet_link'>
         <groupfilter function='crossjoin'>
           <groupfilter function='level-members' level='[Efficiency_Status]' />
@@ -1033,11 +1039,13 @@
       </datasources>
       <datasource-dependencies datasource='federated.19c4tnk037p8j317kfd620m02dcs'>
         <column datatype='date' name='[Date]' role='dimension' type='ordinal' />
+        <column caption='Efficiency Status' datatype='string' name='[Efficiency_Status]' role='dimension' type='nominal' />
         <column datatype='integer' name='[Machine ID]' role='dimension' type='ordinal' />
         <column datatype='string' name='[Operation Mode]' role='dimension' type='nominal' />
         <column datatype='string' name='[Shifts]' role='dimension' type='nominal' />
         <column datatype='string' name='[Temperature]' role='dimension' type='nominal' />
         <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+        <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
         <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
         <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
         <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
@@ -1046,8 +1054,17 @@
       <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]'>
         <groupfilter function='level-members' level='[none:Date:ok]' user:ui-enumeration='all' user:ui-marker='enumerate' />
       </filter>
+      <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]'>
+        <groupfilter function='level-members' level='[none:Efficiency_Status:nk]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+      </filter>
       <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]'>
-        <groupfilter function='level-members' level='[none:Machine ID:ok]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+        <groupfilter function='union' user:ui-domain='database' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
+          <groupfilter function='member' level='[none:Machine ID:ok]' member='1' />
+          <groupfilter function='member' level='[none:Machine ID:ok]' member='2' />
+          <groupfilter function='member' level='[none:Machine ID:ok]' member='3' />
+          <groupfilter function='member' level='[none:Machine ID:ok]' member='4' />
+          <groupfilter function='member' level='[none:Machine ID:ok]' member='5' />
+        </groupfilter>
       </filter>
       <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Operation Mode:nk]'>
         <groupfilter function='level-members' level='[none:Operation Mode:nk]' user:ui-enumeration='all' user:ui-marker='enumerate' />
@@ -1311,6 +1328,12 @@
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
             <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action6_17BA26915C3C4E618C5DE2DC1312355D]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action4_0826F2BED64A4D3AA63911BC14BBED0F]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Efficiency_Status]' />
+              <groupfilter function='level-members' level='[Machine ID]' />
+            </groupfilter>
+          </filter>
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Maintenance)]'>
             <groupfilter function='level-members' level='[Maintenance]' user:ui-action-filter='[Action1_223053A4B46E4BFE87A65FBE4D28DDD1]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
@@ -1327,6 +1350,8 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1441,7 +1466,13 @@
             <groupfilter function='level-members' level='[dy:Date:ok]' user:ui-action-filter='[Action5_7A51CFF2420C4B0CBA69E71822403D52]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
-            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action6_17BA26915C3C4E618C5DE2DC1312355D]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action2_ED4637FA6052485A9729B7B181003F0E]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action4_0826F2BED64A4D3AA63911BC14BBED0F]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Efficiency_Status]' />
+              <groupfilter function='level-members' level='[Machine ID]' />
+            </groupfilter>
           </filter>
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]'>
             <groupfilter function='level-members' level='[Operation Mode]' user:ui-action-filter='[Action3_668A691B69C24BD09DFCE434F0F7FC7B]' user:ui-enumeration='all' user:ui-marker='enumerate' />
@@ -1449,12 +1480,14 @@
           <slices>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (DAY(Date))]</column>
-            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Operation Mode:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Shifts:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1529,6 +1562,7 @@
             <column-instance column='[Machine ID]' derivation='Count' name='[cnt:Machine ID:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='Day' name='[dy:Date:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
@@ -1543,6 +1577,12 @@
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
             <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action2_ED4637FA6052485A9729B7B181003F0E]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action4_0826F2BED64A4D3AA63911BC14BBED0F]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Efficiency_Status]' />
+              <groupfilter function='level-members' level='[Machine ID]' />
+            </groupfilter>
+          </filter>
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Maintenance)]'>
             <groupfilter function='level-members' level='[Maintenance]' user:ui-action-filter='[Action1_223053A4B46E4BFE87A65FBE4D28DDD1]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
@@ -1555,6 +1595,8 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1647,6 +1689,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1742,6 +1785,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1835,6 +1879,12 @@
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
             <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action2_ED4637FA6052485A9729B7B181003F0E]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]'>
+            <groupfilter function='crossjoin' user:ui-action-filter='[Action4_0826F2BED64A4D3AA63911BC14BBED0F]' user:ui-enumeration='all' user:ui-marker='enumerate'>
+              <groupfilter function='level-members' level='[Efficiency_Status]' />
+              <groupfilter function='level-members' level='[Machine ID]' />
+            </groupfilter>
+          </filter>
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Maintenance)]'>
             <groupfilter function='level-members' level='[Maintenance]' user:ui-action-filter='[Action1_223053A4B46E4BFE87A65FBE4D28DDD1]' user:ui-enumeration='all' user:ui-marker='enumerate' />
           </filter>
@@ -1859,6 +1909,8 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Machine ID)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1948,6 +2000,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2045,6 +2098,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2163,6 +2217,7 @@
             <column-instance column='[Quality Control Defect Rate (%)]' derivation='Avg' name='[avg:Quality Control Defect Rate (%):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='Day' name='[dy:Date:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
@@ -2186,6 +2241,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2295,6 +2351,7 @@
           </datasources>
           <datasource-dependencies datasource='federated.19c4tnk037p8j317kfd620m02dcs'>
             <column datatype='date' name='[Date]' role='dimension' type='ordinal' />
+            <column caption='Efficiency Status' datatype='string' name='[Efficiency_Status]' role='dimension' type='nominal' />
             <column datatype='integer' name='[Machine ID]' role='dimension' type='ordinal' />
             <column datatype='string' name='[Operation Mode]' role='dimension' type='nominal' />
             <column datatype='real' name='[Power Consumption (kW)]' role='measure' type='quantitative' />
@@ -2306,17 +2363,27 @@
             <column-instance column='[Temperature (C)]' derivation='Avg' name='[avg:Temperature (C):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Vibration (Hz)]' derivation='Avg' name='[avg:Vibration (Hz):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
             <column-instance column='[Temperature]' derivation='None' name='[none:Temperature:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
+            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action14_FC8EE9E65A1D46E0AA580CE34A93BAF7]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]'>
+            <groupfilter function='level-members' level='[Operation Mode]' user:ui-action-filter='[Action22_5D6A09093D714C6AB2828722128B405E]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <slices>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Operation Mode:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Shifts:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2485,6 +2552,7 @@
           </datasources>
           <datasource-dependencies datasource='federated.19c4tnk037p8j317kfd620m02dcs'>
             <column datatype='date' name='[Date]' role='dimension' type='ordinal' />
+            <column caption='Efficiency Status' datatype='string' name='[Efficiency_Status]' role='dimension' type='nominal' />
             <column datatype='integer' name='[Machine ID]' role='dimension' type='ordinal' />
             <column datatype='string' name='[Operation Mode]' role='dimension' type='nominal' />
             <column datatype='real' name='[Production Speed (units/hr)]' role='measure' type='quantitative' />
@@ -2493,11 +2561,18 @@
             <column-instance column='[Production Speed (units/hr)]' derivation='Avg' name='[avg:Production Speed (units/hr):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='Day' name='[dy:Date:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
             <column-instance column='[Temperature]' derivation='None' name='[none:Temperature:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
+            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action14_FC8EE9E65A1D46E0AA580CE34A93BAF7]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]'>
+            <groupfilter function='level-members' level='[Operation Mode]' user:ui-action-filter='[Action22_5D6A09093D714C6AB2828722128B405E]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[dy:Date:ok]'>
             <groupfilter function='level-members' level='[dy:Date:ok]' />
           </filter>
@@ -2508,6 +2583,9 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Operation Mode:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Shifts:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2582,6 +2660,7 @@
           </datasources>
           <datasource-dependencies datasource='federated.19c4tnk037p8j317kfd620m02dcs'>
             <column datatype='date' name='[Date]' role='dimension' type='ordinal' />
+            <column caption='Efficiency Status' datatype='string' name='[Efficiency_Status]' role='dimension' type='nominal' />
             <column datatype='integer' name='[Machine ID]' role='dimension' type='ordinal' />
             <column datatype='string' name='[Operation Mode]' role='dimension' type='nominal' />
             <column datatype='real' name='[Production Speed (units/hr)]' role='measure' type='quantitative' />
@@ -2589,17 +2668,23 @@
             <column datatype='string' name='[Temperature]' role='dimension' type='nominal' />
             <column-instance column='[Production Speed (units/hr)]' derivation='Avg' name='[avg:Production Speed (units/hr):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
             <column-instance column='[Temperature]' derivation='None' name='[none:Temperature:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
+            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action14_FC8EE9E65A1D46E0AA580CE34A93BAF7]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <slices>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Operation Mode:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Shifts:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2677,6 +2762,7 @@
           </datasources>
           <datasource-dependencies datasource='federated.19c4tnk037p8j317kfd620m02dcs'>
             <column datatype='date' name='[Date]' role='dimension' type='ordinal' />
+            <column caption='Efficiency Status' datatype='string' name='[Efficiency_Status]' role='dimension' type='nominal' />
             <column datatype='integer' name='[Machine ID]' role='dimension' type='ordinal' />
             <column datatype='string' name='[Operation Mode]' role='dimension' type='nominal' />
             <column datatype='real' name='[Quality Control Defect Rate (%)]' role='measure' type='quantitative' />
@@ -2684,11 +2770,15 @@
             <column datatype='string' name='[Temperature]' role='dimension' type='nominal' />
             <column-instance column='[Quality Control Defect Rate (%)]' derivation='Avg' name='[avg:Quality Control Defect Rate (%):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
             <column-instance column='[Temperature]' derivation='None' name='[none:Temperature:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
+            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action14_FC8EE9E65A1D46E0AA580CE34A93BAF7]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <manual-sort column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]' direction='ASC'>
             <dictionary>
               <bucket>%all%</bucket>
@@ -2750,6 +2840,8 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -2822,6 +2914,7 @@
           </datasources>
           <datasource-dependencies datasource='federated.19c4tnk037p8j317kfd620m02dcs'>
             <column datatype='date' name='[Date]' role='dimension' type='ordinal' />
+            <column caption='Efficiency Status' datatype='string' name='[Efficiency_Status]' role='dimension' type='nominal' />
             <column datatype='integer' name='[Machine ID]' role='dimension' type='ordinal' />
             <column datatype='string' name='[Operation Mode]' role='dimension' type='nominal' />
             <column datatype='real' name='[Power Consumption (kW)]' role='measure' type='quantitative' />
@@ -2836,6 +2929,7 @@
             <column-instance column='[Temperature (C)]' derivation='Avg' name='[avg:Temperature (C):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Vibration (Hz)]' derivation='Avg' name='[avg:Vibration (Hz):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Power Consumption]' derivation='None' name='[none:Power Consumption:nk]' pivot='key' type='nominal' />
@@ -2844,6 +2938,9 @@
             <column-instance column='[Temperature]' derivation='None' name='[none:Temperature:nk]' pivot='key' type='nominal' />
             <column-instance column='[Vibration]' derivation='None' name='[none:Vibration:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]'>
+            <groupfilter function='level-members' level='[Efficiency_Status]' user:ui-action-filter='[Action14_FC8EE9E65A1D46E0AA580CE34A93BAF7]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <manual-sort column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Power Consumption:nk]' direction='ASC'>
             <dictionary>
               <bucket>&quot;High Load&quot;</bucket>
@@ -2864,6 +2961,8 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status)]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3072,6 +3171,9 @@
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
             <column-instance column='[Temperature]' derivation='None' name='[none:Temperature:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]'>
+            <groupfilter function='level-members' level='[Operation Mode]' user:ui-action-filter='[Action22_5D6A09093D714C6AB2828722128B405E]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <manual-sort column='[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]' direction='ASC'>
             <dictionary>
               <bucket>&quot;Low&quot;</bucket>
@@ -3085,6 +3187,8 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Temperature:nk]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3208,6 +3312,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Operation Mode,Shifts)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3304,6 +3409,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Month)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3372,6 +3478,7 @@
             <column datatype='string' name='[Temperature]' role='dimension' type='nominal' />
             <column-instance column='[Production Speed (units/hr)]' derivation='Avg' name='[avg:Production Speed (units/hr):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
@@ -3390,6 +3497,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Month)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3454,6 +3562,7 @@
             <column datatype='string' name='[Temperature]' role='dimension' type='nominal' />
             <column-instance column='[Quality Control Defect Rate (%)]' derivation='Avg' name='[avg:Quality Control Defect Rate (%):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
@@ -3479,6 +3588,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Month)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3548,6 +3658,7 @@
             <column datatype='string' name='[Vibration]' role='dimension' type='nominal' />
             <column-instance column='[Error Rate (%)]' derivation='Avg' name='[avg:Error Rate (%):qk]' pivot='key' type='quantitative' />
             <column-instance column='[Date]' derivation='None' name='[none:Date:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[Efficiency_Status]' derivation='None' name='[none:Efficiency_Status:nk]' pivot='key' type='nominal' />
             <column-instance column='[Machine ID]' derivation='None' name='[none:Machine ID:ok]' pivot='key' type='ordinal' />
             <column-instance column='[Operation Mode]' derivation='None' name='[none:Operation Mode:nk]' pivot='key' type='nominal' />
             <column-instance column='[Shifts]' derivation='None' name='[none:Shifts:nk]' pivot='key' type='nominal' />
@@ -3574,6 +3685,7 @@
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[Action (Efficiency Status,Month)]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Date:ok]</column>
             <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Machine ID:ok]</column>
+            <column>[federated.19c4tnk037p8j317kfd620m02dcs].[none:Efficiency_Status:nk]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -3656,7 +3768,7 @@
             <zone h='93524' id='29' param='vert' type-v2='layout-flow' w='99152' x='424' y='5598'>
               <zone h='93524' id='7' param='horz' type-v2='layout-flow' w='99152' x='424' y='5598'>
                 <zone h='93524' id='5' type-v2='layout-basic' w='89777' x='424' y='5598'>
-                  <zone h='24155' id='3' name='1_0' w='21206' x='18372' y='74967'>
+                  <zone h='24155' id='3' name='1_0' w='21206' x='18371' y='74967'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -3664,7 +3776,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='24155' id='9' name='1_1' w='17948' x='424' y='74967'>
+                  <zone h='24155' id='9' name='1_1' w='17947' x='424' y='74967'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -3672,7 +3784,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='24155' id='13' name='1_3' w='29537' x='60664' y='74967'>
+                  <zone h='24155' id='13' name='1_3' w='29538' x='60663' y='74967'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -3680,7 +3792,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='69369' id='16' name='1_5' w='36073' x='54128' y='5598'>
+                  <zone h='69369' id='16' name='1_5' w='36074' x='54127' y='5598'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -3688,7 +3800,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='69369' id='17' name='1_6' w='53704' x='424' y='5598'>
+                  <zone h='69369' id='17' name='1_6' w='53703' x='424' y='5598'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -3696,7 +3808,7 @@
                       <format attr='margin' value='4' />
                     </zone-style>
                   </zone>
-                  <zone h='24155' id='20' name='1_1_1' w='21086' x='39578' y='74967'>
+                  <zone h='24155' id='20' name='1_1_1' w='21086' x='39577' y='74967'>
                     <zone-style>
                       <format attr='border-color' value='#000000' />
                       <format attr='border-style' value='none' />
@@ -4983,7 +5095,7 @@
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='17' />
+      <active id='18' />
       <simple-id uuid='{DCC88FC0-0D30-48C9-B93D-A5F6FE70A69F}' />
     </window>
     <window class='worksheet' name='2_1'>
@@ -5171,7 +5283,7 @@
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='26' />
+      <active id='30' />
       <simple-id uuid='{033ED436-1F2E-4CB1-9B6F-106C732E8CF3}' />
     </window>
     <window class='worksheet' name='3_1'>
@@ -5326,7 +5438,7 @@
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='9' />
+      <active id='8' />
       <simple-id uuid='{E4B7EEC6-CA33-4883-9F9F-F159819E77B5}' />
     </window>
     <window class='dashboard' name='Dashboard 4'>
@@ -5353,7 +5465,7 @@
           <zoom type='entire-view' />
         </viewpoint>
       </viewpoints>
-      <active id='21' />
+      <active id='13' />
       <simple-id uuid='{C1E1ED1E-2ECD-4539-A1F4-78503475A69F}' />
     </window>
   </windows>
