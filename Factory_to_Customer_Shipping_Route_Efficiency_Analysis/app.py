@@ -4,6 +4,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+import os
 
 # Set Streamlit page configuration
 st.set_page_config(
@@ -171,7 +172,23 @@ STATE_COORDS = {
 
 @st.cache_data
 def load_data():
-    csv_path = 'Dataset/Nassau Candy Distributor Visualisation.csv'
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(base_dir, 'Dataset', 'Nassau Candy Distributor Visualisation.csv'),
+        os.path.join(base_dir, 'Nassau Candy Distributor Visualisation.csv'),
+        os.path.join(base_dir, 'Dataset', 'Nassau Candy Distributor.csv'),
+        os.path.join('Dataset', 'Nassau Candy Distributor Visualisation.csv'),
+        'Nassau Candy Distributor Visualisation.csv'
+    ]
+    csv_path = None
+    for cand in candidates:
+        if os.path.exists(cand):
+            csv_path = cand
+            break
+            
+    if csv_path is None:
+        raise FileNotFoundError(f"Could not find Nassau Candy Distributor Visualisation.csv. Looked in: {candidates}")
+        
     df = pd.read_csv(csv_path)
     
     # Parse dates safely (removing timezone if present)
