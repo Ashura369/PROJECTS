@@ -87,8 +87,11 @@ st.markdown("""
     }
     .stTabs [aria-selected="true"] {
         background-color: transparent !important;
-        color: #38bdf8 !important;
-        border-bottom: 2px solid #38bdf8 !important;
+        color: #ff4b4b !important;
+        border-bottom: none !important;
+    }
+    .stTabs [aria-selected="true"] p {
+        color: #ff4b4b !important;
     }
     
     /* Expander Styling */
