@@ -85,37 +85,78 @@ st.markdown("""
 # ==============================================================================
 @st.cache_data
 def load_data():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     possible_paths = [
+        os.path.join(base_dir, "Dataset", "Final Visualization Dataset.csv"),
+        os.path.join(base_dir, "Final Visualization Dataset.csv"),
+        os.path.join(base_dir, "Dataset", "Visualization Dataset.csv"),
+        os.path.join(base_dir, "Visualization Dataset.csv"),
         "Dataset/Final Visualization Dataset.csv",
         "Final Visualization Dataset.csv",
-        "../Dataset/Final Visualization Dataset.csv"
+        "../Dataset/Final Visualization Dataset.csv",
+        "Dataset/Visualization Dataset.csv",
+        "Visualization Dataset.csv"
     ]
     df = None
     for path in possible_paths:
         if os.path.exists(path):
-            df = pd.read_csv(path)
-            break
+            try:
+                df = pd.read_csv(path)
+                break
+            except Exception:
+                continue
             
     if df is None:
         st.error("Error: Dataset file 'Final Visualization Dataset.csv' not found!")
         st.stop()
         
-    # Standardize column types
+    # Standardize Attrition column
     if 'Attrition' in df.columns:
+        if df['Attrition'].dtype == object:
+            attr_map = {'Yes': 1, 'No': 0, '1': 1, '0': 0, 'Left': 1, 'Retained': 0}
+            df['Attrition'] = df['Attrition'].map(attr_map).fillna(0).astype(int)
         df['Attrition_Status'] = df['Attrition'].map({0: 'Retained', 1: 'Left'})
+    else:
+        df['Attrition'] = 0
+        df['Attrition_Status'] = 'Retained'
     
     # Ensure calculated metrics exist
-    if 'Promotion Gap Ratio' not in df.columns:
+    if 'Promotion Gap Ratio' not in df.columns and 'Years At Company' in df.columns and 'Years Since Last Promotion' in df.columns:
         tenure = df['Years At Company'].replace(0, 0.5)
         df['Promotion Gap Ratio'] = (df['Years Since Last Promotion'] / tenure).round(2)
         
-    if 'Role Stagnation Index' not in df.columns:
+    if 'Role Stagnation Index' not in df.columns and 'Years At Company' in df.columns and 'Years In Current Role' in df.columns:
         tenure = df['Years At Company'].replace(0, 0.5)
         df['Role Stagnation Index'] = (df['Years In Current Role'] / tenure).round(2)
         
-    if 'Training Intensity' not in df.columns:
+    if 'Training Intensity' not in df.columns and 'Years At Company' in df.columns and 'Training Times Last Year' in df.columns:
         tenure = df['Years At Company'].replace(0, 0.5)
         df['Training Intensity'] = (df['Training Times Last Year'] / tenure).round(2)
+
+    # Ensure required label/cluster columns exist with fallback logic
+    if 'Job Level Label' not in df.columns and 'Job Level' in df.columns:
+        level_map = {1: 'Associate / Junior', 2: 'Mid-Level', 3: 'Senior', 4: 'Staff / Principal', 5: 'Director / VP'}
+        df['Job Level Label'] = df['Job Level'].map(level_map).fillna('Mid-Level')
+
+    if 'Manager Stability Indicator Labels' not in df.columns and 'Years With Curr Manager' in df.columns:
+        def mgr_stability(yrs):
+            if yrs < 1: return 'New Relationship'
+            elif yrs <= 3: return 'Developing'
+            elif yrs <= 6: return 'Stable'
+            else: return 'Highly Stable'
+        df['Manager Stability Indicator Labels'] = df['Years With Curr Manager'].apply(mgr_stability)
+
+    if 'Promotion Risk Cluster' not in df.columns:
+        def classify_cluster(row):
+            if row.get('Years Since Last Promotion', 0) <= 1 and row.get('Performance Rating', 3) >= 3:
+                return 'Fast-Track High Performers'
+            elif row.get('Years In Current Role', 0) >= 4 and row.get('Job Level', 1) in [2, 3]:
+                return 'Role-Stagnant Mid-Level'
+            elif row.get('Years At Company', 0) >= 8 and row.get('Years Since Last Promotion', 0) >= 3:
+                return 'Tenured & Stalled Seniors'
+            else:
+                return 'Early-Career Explorers'
+        df['Promotion Risk Cluster'] = df.apply(classify_cluster, axis=1)
 
     return df
 
@@ -492,10 +533,13 @@ with tab3:
     st.markdown("---")
     st.subheader("Actionable Employee Intervention Register")
     
+    available_actions = list(active_df['Suggested Action'].unique())
+    default_actions = [act for act in ["Immediate Promotion / Compensation Review", "Lateral Role Rotation / New Project"] if act in available_actions]
+
     action_filter = st.multiselect(
         "Filter by Recommended Action",
-        options=list(active_df['Suggested Action'].unique()),
-        default=["Immediate Promotion / Compensation Review", "Lateral Role Rotation / New Project"]
+        options=available_actions,
+        default=default_actions
     )
     
     filtered_action_df = active_df[active_df['Suggested Action'].isin(action_filter)][
