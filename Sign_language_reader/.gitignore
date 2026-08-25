@@ -1,0 +1,13 @@
+# Omit large dataset folders and zip files
+Dataset/
+Datasets/
+*.zip
+
+# Omit trained model files
+*.h5
+*.pkl
+
+# Omit Jupyter & Python cache
+.ipynb_checkpoints/
+__pycache__/
+.venv/
