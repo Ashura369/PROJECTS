@@ -1,6 +1,4 @@
-# Omit large dataset folders and zip files
-Dataset/
-Datasets/
+
 *.zip
 
 # Omit trained model files
