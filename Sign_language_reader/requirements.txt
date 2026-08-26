@@ -1,0 +1,12 @@
+streamlit
+tensorflow
+keras
+
+# focusing on hand segment
+mediapipe
+
+opencv-python
+pillow
+
+matplotlib.pyplot
+
