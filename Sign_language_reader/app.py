@@ -1,22 +1,31 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-import cv2
+import cv2                              # cv2 is OpenCV (Open Source Computer Vision), a popular Python library for processing images and real-time video streams, live video, photo, cropping, resizing, color conversion, etc
 
-# 1. Page Config
-st.set_page_config(page_title="Live ISL Reader", layout="wide")
-st.title("🤟 Real-Time Indian Sign Language Reader")
-st.write("Continuous live webcam stream with real-time sign predictions!")
+import sys
+# a standard built-in Python module that lets your script interact directly with the Python interpreter and your Operating System.
 
-# 2. Load Keras Model
+from streamlit.web.cli import main
+from streamlit.web import cli as stcli
+# Those two lines import Streamlit's internal Command Line Interface (CLI) modules.
+# They are imported so you can run your app by simply clicking the "Run Code" (▶) button in VS Code, without opening a terminal or typing streamlit run app.py manually.
+
+# ------------------------------------------------------------------------------------------------------------------
+
+st.set_page_config(page_title='liveISLReader', layout='wide')
+st.title("Real-Time Indian Sign Language Reader")
+st.write("Continuous live webcam stream with real-time sign predictions !!!")
+
+# ------------------------------------------------------------------------------------------------------------------
+
+# Loading the model
 @st.cache_resource
 def load_model():
-    model_path = "Sign_language_model.keras"
-    return tf.keras.models.load_model(model_path)
-
+    return tf.keras.models.load_model("Sign_language_model.keras")
 model = load_model()
 
-# 3. Class Labels (0-9, A-Z -> 36 Classes)
+# class labels
 class_names = [
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
@@ -24,107 +33,84 @@ class_names = [
     'U', 'V', 'W', 'X', 'Y', 'Z' 
 ]
 
-# 4. Stream Control & Camera Settings
-col_ctrl1, col_ctrl2, col_ctrl3 = st.columns([1, 1, 1])
-with col_ctrl1:
-    run_stream = st.checkbox("▶ Start Real-Time Live Webcam Stream", value=False)
-with col_ctrl2:
-    mirror_flip = st.checkbox("🪞 Mirror Flip Video Feed", value=True)
-with col_ctrl3:
-    box_size = st.slider("🎯 Target Box Size:", min_value=150, max_value=400, value=250, step=10)
+# ------------------------------------------------------------------------------------------------------------------
 
-# Placeholders for Streamlit UI
-col1, col2 = st.columns([2, 1])
+# function for showing popup img
+@st.dialog("Original Input Image", width='large')               # this makes the img pop up
+def show_image_popup(image):
+    st.image(image, use_container_width=True)
+
+col1, col2 = st.columns([2,1])
 with col1:
-    FRAME_WINDOW = st.image([])
+    img_taken = st.file_uploader("Upload a Hand Sign Image", type=['jpg','jpeg','png'])
+
+    if img_taken is not None:
+        bytes_data = img_taken.getvalue()           # The input img is story as raw list of numbers, it retreives the list of numbers and stores it into bytes data
+        cv_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+            # cv2.imdecode -- Converts the raw file stream into a 1-dimensional list of numbers in RAM
+            # cv2.IMREAD_COLOR -- Tells OpenCV to extract full 3-channel color (Blue, Green, Red).
+
+
+        # Coverting BGR to RGB 
+        rgb_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+
+        # resizing the input img
+        resized_img = cv2.resize(rgb_img, (180,180))
+
+        # displaying the img
+        st.image(resized_img, caption='Resized Image (180 x 180)')
+
+        if st.button("Maximize"):
+            show_image_popup(rgb_img)
+        
 with col2:
-    st.markdown("### 📊 Live Prediction Status")
+    st.markdown("### Prediction Resualts")
     prediction_text = st.empty()
     confidence_bar = st.progress(0.0)
     confidence_text = st.empty()
     st.markdown("---")
-    st.markdown("### 🔝 Top 3 Predictions")
-    top3_window = st.empty()
+
+    st.markdown("#### Top 3 Predictions")
+    top3_resualts = st.empty()
     st.markdown("---")
-    st.markdown("### 🔍 Model Input View (180x180)")
-    HAND_CROP_WINDOW = st.image([])
 
-# 5. Live Webcam Loop
-if run_stream:
-    cap = cv2.VideoCapture(0)
-    
-    if not cap.isOpened():
-        st.error("❌ Unable to access webcam 0. Please make sure no other app is using your camera.")
-    else:
-        while run_stream:
-            ret, frame = cap.read()
-            if not ret:
-                st.error("Failed to grab camera frame.")
-                break
-                
-            # Optional Horizontal Mirror Flip
-            if mirror_flip:
-                frame = cv2.flip(frame, 1)
-                
-            h, w, _ = frame.shape
-            
-            # Define Tight ROI Box in Center of Frame
-            half_box = box_size // 2
-            cy, cx = h // 2, w // 2
-            y1, y2 = max(0, cy - half_box), min(h, cy + half_box)
-            x1, x2 = max(0, cx - half_box), min(w, cx + half_box)
-            
-            # Crop & Convert BGR to RGB
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            cropped_hand = rgb_frame[y1:y2, x1:x2]
-            
-            if cropped_hand.size != 0:
-                # Resize cropped hand to match model input shape (180, 180)
-                resized_hand = cv2.resize(cropped_hand, (180, 180))
-                
-                # MobileNetV2 Preprocessing: scale pixels from [0, 255] to [-1, 1]
-                processed_hand = tf.keras.applications.mobilenet_v2.preprocess_input(resized_hand.astype(np.float32))
-                img_batch = np.expand_dims(processed_hand, axis=0)
-                
-                # Make Real-Time Prediction
-                predictions = model.predict(img_batch, verbose=0)[0]
-                
-                # Top 1 Prediction
-                predicted_idx = int(np.argmax(predictions))
-                predicted_label = class_names[predicted_idx] if predicted_idx < len(class_names) else f"Class_{predicted_idx}"
-                confidence = float(predictions[predicted_idx] * 100)
-                
-                # Top 3 Predictions
-                top3_indices = np.argsort(predictions)[-3:][::-1]
-                top3_str = ""
-                for idx in top3_indices:
-                    label_name = class_names[idx] if idx < len(class_names) else f"Class_{idx}"
-                    top3_str += f"* **Sign {label_name}**: {predictions[idx]*100:.1f}%\n"
-                
-                # Draw green target box & prediction label on live frame
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
-                label_display = f"Sign: {predicted_label} ({confidence:.1f}%)"
-                cv2.putText(frame, label_display, (x1, max(35, y1 - 10)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
-                
-                # Update UI Side Panel
-                prediction_text.markdown(f"## Predicted Sign: **{predicted_label}**")
-                confidence_bar.progress(min(1.0, float(confidence / 100)))
-                confidence_text.write(f"Confidence Level: **{confidence:.2f}%**")
-                top3_window.markdown(top3_str)
-                HAND_CROP_WINDOW.image(resized_hand, caption="Resized Hand Input", use_container_width=True)
-            
-            # Convert BGR to RGB for Streamlit display
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            FRAME_WINDOW.image(frame_rgb, use_container_width=True)
-            
-        cap.release()
 
-# Enable VS Code "Run Code" (▶) Button Launcher
-import sys
-from streamlit.web.cli import main
+# Showing the output of the img (model prediction)
+if img_taken is not None:
+    processed_img = resized_img.astype(np.float32)
+    img_batch = np.expand_dims(processed_img, axis=0)
+
+    # making prediction
+    predictions = model.predict(img_batch, verbose=0)[0]
+
+    # Top 1 Prediction
+    predicted_idx = int(np.argmax(predictions))
+    predicted_label = class_names[predicted_idx]
+    confidence = float(predictions[predicted_idx] * 100)
+
+    # Top 3 Predictions
+    top3_indices = np.argsort(predictions)[-3:][::-1]
+    top3_str = ""
+
+    for idx in top3_indices:
+        top3_str += f"* **Sign {class_names[idx]}**: {predictions[idx]*100:.1f}%\n"
+
+    # Displayiing resualts in col2
+    prediction_text.markdown(f"Predicted Sign : {predicted_label}")
+    confidence_bar.progress(min(1.0, float(confidence / 100)))
+    confidence_text.write(f"Confidence Level : {confidence:.2f}%")
+    top3_resualts.markdown(top3_str)
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    if not st.runtime.exists():
-        sys.argv = ["streamlit", "run", sys.argv[0]]
-        sys.exit(main())
+    if st.runtime.exists():
+        pass
+    else:
+        sys.argv = ['streamlit', 'run', sys.argv[0]]                # This line prepares the command line argument list to look like ['streamlit', 'run', 'app.py']. (Note: sys.argb has a small typo — it should be sys.argv with a v).
+        sys.exit(stcli.main())                                      # Launches Streamlit's engine (stcli.main()), opens your web browser to http://localhost:8501, and starts your web app automatically!
+
