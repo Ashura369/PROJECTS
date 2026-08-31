@@ -38,8 +38,8 @@ st.markdown(
 # HEADINGS
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-st.title("Object Detection Model")
-st.write("Model used - yolo26n.pt (by ultralytics)")
+st.title("Project Vision | Object Detection")
+st.write("Detecting Over More Than 100 Classes")
 st.markdown("---")
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -214,7 +214,12 @@ elif button == 'Live webcam':
     while True:
         ret, frames = cap.read()
         if not ret:
-            st.subheader("ERROR")
+            st.subheader("⚠️ Camera Error")
+            st.write("""
+The following error is generally caused by denied camera access.
+
+If camera permission is not granted, please allow camera access in your browser or Windows Privacy Settings.
+""")
             break
 
         # frames = cv.flip(frames, 1)
