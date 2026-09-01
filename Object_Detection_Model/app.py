@@ -214,7 +214,7 @@ elif button == 'Recorded Video':
 
 
 elif button == 'Live webcam':
-    st.subheader("📹 Live Webcam Object Detection")
+    st.subheader("Live Webcam Object Detection")
     st.caption("Real-time YOLO detection in HD quality.")
 
     # STUN server configuration for cloud deployment
