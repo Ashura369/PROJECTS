@@ -208,84 +208,29 @@ elif button == 'Recorded Video':
 # 'LIVE WEB CAM' BUTTON
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+# THIS SECTION OF THE CODE IS WRITTEN WITH THE HELP OF AI,
+
+# coz open cv can work properly on local host, but while deploying to the server, it throws error.
+# Hence the live web cam section of the web app, is written using HTML, CSS, & JS. 
+
+
 elif button == 'Live webcam':
-    st.subheader("Live Webcam Object Detection")
+    import streamlit.components.v1 as components
+    from pathlib import Path
 
-    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1, 1, 1])
+    st.subheader("📹 Native HD Live Webcam Detection")
 
-    with ctrl_col1:
-        quality_option = st.selectbox(
-            "Camera Quality",
-            options=["HD (720p) - Recommended", "Full HD (1080p)", "Standard (480p)"],
-            index=0
-        )
+    # Read the separate HTML file
+    html_path = Path(__file__).parent / "webcam.html"
 
-    with ctrl_col2:
-        conf_threshold = st.slider("Confidence Threshold", min_value=0.1, max_value=1.0, value=0.45, step=0.05)
-    with ctrl_col3:
-        flip_camera = st.checkbox("Mirror / Flip Camera", value=True)
+    with open(html_path, "r", encoding="utf-8") as f:
+        camera_html = f.read()
 
-    # Resolution constraints mapping based on user selection
-    if "1080p" in quality_option:
-        video_width = {"ideal": 1920, "min": 1280}
-        video_height = {"ideal": 1080, "min": 720}
-    elif "720p" in quality_option:
-        video_width = {"ideal": 1280, "min": 640}
-        video_height = {"ideal": 720, "min": 480}
-    else:
-        video_width = {"ideal": 640, "min": 320}
-        video_height = {"ideal": 480, "min": 240}
-
-    # STUN configuration for NAT traversal on deployed cloud servers
-    RTC_CONFIGURATION = RTCConfiguration(
-        {
-            "iceServers": [
-                {"urls": ["stun:stun.l.google.com:19302"]},
-                {"urls": ["stun:stun1.l.google.com:19302"]},
-            ]
-        }
-    )
-
-    # Real-time frame processing callback
-    def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
-
-        # Convert WebRTC video frame to OpenCV BGR format
-        img = frame.to_ndarray(format="bgr24")
-
-        # Optional horizontal flip for mirror effect
-        if flip_camera:
-            img = cv.flip(img, 1)
-
-        # Run YOLO inference (imgsz=640 optimizes speed while keeping HD visuals)
-        results = model(img, conf=conf_threshold, imgsz=640)
-
-        # Render sharp, crisp bounding boxes and labels
-        annotated_frame = results[0].plot(
-            line_width=2,
-            font_size=12,
-            labels=True,
-            conf=True
-        )
-        # Return the processed frame back to the browser
-        return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
-    
-    # Streamlit WebRTC Component
-    webrtc_streamer(
-        key=f"live-webcam-{quality_option}",
-        video_frame_callback=video_frame_callback,
-        rtc_configuration=RTC_CONFIGURATION,
-        media_stream_constraints={
-            "video": {
-                "width": video_width,
-                "height": video_height,
-                "frameRate": {"ideal": 30, "min": 15},
-            },
-            "audio": False,
-        },
-        async_processing=True,
-    )
+    # Render inside Streamlit
+    components.html(camera_html, height=720, scrolling=False)
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
