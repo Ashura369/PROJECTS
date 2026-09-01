@@ -214,20 +214,61 @@ elif button == 'Recorded Video':
 # Hence the live web cam section of the web app, is written using HTML, CSS, & JS. 
 
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 'LIVE WEB CAM' BUTTON
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 elif button == 'Live webcam':
-    import streamlit.components.v1 as components
-    from pathlib import Path
+    st.subheader("📹 Live Webcam Object Detection")
+    st.caption("Real-time YOLO detection in HD quality.")
 
-    st.subheader("📹 Native HD Live Webcam Detection")
+    # STUN server configuration for cloud deployment
+    RTC_CONFIGURATION = RTCConfiguration(
+        {
+            "iceServers": [
+                {"urls": ["stun:stun.l.google.com:19302"]},
+                {"urls": ["stun:stun1.l.google.com:19302"]},
+            ]
+        }
+    )
 
-    # Read the separate HTML file
-    html_path = Path(__file__).parent / "webcam.html"
+    class YOLOVideoProcessor:
+        def __init__(self):
+            self.frame_count = 0
+            self.last_results = None
 
-    with open(html_path, "r", encoding="utf-8") as f:
-        camera_html = f.read()
+        def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+            img = frame.to_ndarray(format="bgr24")
+            self.frame_count += 1
 
-    # Render inside Streamlit
-    components.html(camera_html, height=720, scrolling=False)
+            # Process YOLO on alternating frames to keep CPU load low and video quality in HD
+            if self.frame_count % 2 == 0 or self.last_results is None:
+                self.last_results = model(img, imgsz=640)
+
+            # Draw sharp, crisp YOLO bounding boxes and labels
+            annotated_frame = self.last_results[0].plot(
+                line_width=2,
+                font_size=12,
+                labels=True,
+                conf=True
+            )
+
+            return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
+
+    webrtc_streamer(
+        key="yolo-live-webcam-hd",
+        video_processor_factory=YOLOVideoProcessor,
+        rtc_configuration=RTC_CONFIGURATION,
+        media_stream_constraints={
+            "video": {
+                "width": {"min": 1280, "ideal": 1280},
+                "height": {"min": 720, "ideal": 720},
+                "frameRate": {"ideal": 30, "min": 15},
+            },
+            "audio": False,
+        },
+        async_processing=True,
+    )
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
