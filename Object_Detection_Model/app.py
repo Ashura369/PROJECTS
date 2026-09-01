@@ -7,6 +7,8 @@ from streamlit.web.cli import main
 from streamlit.web import cli as stcli
 from PIL import Image
 import tempfile                             # for video preprocessing
+import av
+from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # PAGE LAYOUT
@@ -207,27 +209,26 @@ elif button == 'Recorded Video':
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 elif button == 'Live webcam':
-    
-    cap = cv.VideoCapture(0, cv.CAP_DSHOW)
-    cam_feed = st.empty()
+    st.subheader("📹 Live Webcam Detection")
+    st.caption("Allow camera permissions when prompted by your browser.")
 
-    while True:
-        ret, frames = cap.read()
-        if not ret:
-            st.subheader("⚠️ Camera Error")
-            st.write("""
-The following error is generally caused by denied camera access.
+    RTC_CONFIGURATION = RTCConfiguration(
+        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+    )
 
-If camera permission is not granted, please allow camera access in your browser or Windows Privacy Settings.
-""")
-            break
+    def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
+        img = frame.to_ndarray(format="bgr24")
+        results = model(img)
+        annotated_frame = results[0].plot()
+        return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
 
-        # frames = cv.flip(frames, 1)
-        results = model(frames)
-        vid_rgb = cv.cvtColor(results[0].plot(), cv.COLOR_BGR2RGB)
-        cam_feed.image(vid_rgb, use_container_width=True)
-
-    cap.release()
+    webrtc_streamer(
+        key="live-webcam",
+        video_frame_callback=video_frame_callback,
+        rtc_configuration=RTC_CONFIGURATION,
+        media_stream_constraints={"video": True, "audio": False},
+        async_processing=True,
+    )
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
